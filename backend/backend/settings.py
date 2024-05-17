@@ -42,14 +42,14 @@ INSTALLED_APPS = [
     'rest_framework',
     # django apps
     'users',
+    'surveys',
 ]
 
 AUTH_USER_MODEL = 'users.UserProfile'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'users.views.CustomAuthentication',
+        'users.authentication.CustomAuthentication',
     ],
 }
 

@@ -40,7 +40,17 @@ INSTALLED_APPS = [
 
     # DRF
     'rest_framework',
+    # django apps
+    'users',
 ]
+
+AUTH_USER_MODEL = 'users.UserProfile'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

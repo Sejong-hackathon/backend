@@ -7,6 +7,8 @@ from sejong_univ_auth import auth, ClassicSession
 
 from .models import UserProfile
 
+from rest_framework.authentication import BaseAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 
 def get_user_info(id, pw):
     # ClassicSession: 대양휴머니티칼리지 사이트의 세션 인증 방식
@@ -56,6 +58,7 @@ class LoginView(APIView):
                 # 입력받은 pw와 db에 저장된 pw 비교 (user_pw 암호화 후 비교)
                 if not checkpw(user_pw.encode('utf-8'), user.password.encode('utf-8')):
                     return Response({"status": 400, "context": "세종대학교 포털 비밀번호를 확인하세요"})
+
             except UserProfile.DoesNotExist:
                 # 사용자가 없는 경우 회원가입 처리
                 new_user = UserProfile.objects.create(
@@ -72,3 +75,15 @@ class LoginView(APIView):
             return Response({"status": 200, "context": "로그인 성공"})
         else:
             return Response({"status": 400, "context": serializer.errors})
+
+
+class CustomAuthentication(BaseAuthentication):
+    def authenticate(self, request):
+        # login 성공시 저장된 session 가져온다
+        user_id = request.session.get('id')
+        try:
+            user = UserProfile.objects.get(student_id__exact=user_id)
+        except UserProfile.DoesNotExist:
+            return Response({"status": 401, "context": "로그인 필요"})
+
+        return user, None
